@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+model.joblib
+spam_dataset.csv
+uvicorn.log

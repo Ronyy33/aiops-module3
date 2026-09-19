@@ -1,0 +1,5 @@
+spam-api:multi                                                                                        2cdfda03274f        824MB          177MB        
+spam-api:naive                                                                                        052350799a20       2.41GB          630MB        
+IMAGE                                                                                                 ID             DISK USAGE   CONTENT SIZE   EXTRA
+python:3.11                                                                                           8ce0c4b7bad2       1.62GB          417MB        
+python:3.11-slim                                                                                      9534e5a8e315        226MB         51.4MB        

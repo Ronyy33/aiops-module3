@@ -1,0 +1,16 @@
+healthz -> 200 {'status': 'ok', 'version': 'v1', 'cache': True}
+
+  spam  expected spam  | 1st X-Cache=MISS 2nd X-Cache=HIT
+  ham   expected ham   | 1st X-Cache=MISS 2nd X-Cache=HIT
+
+N = 200 identical-text pairs (400 requests total)
+
+SERVER-SIDE WORK (model predict vs redis lookup)
+  MISS  (compute)        mean=  0.210 ms   median=  0.188 ms   p90=  0.286 ms
+  HIT   (cache)          mean=  0.135 ms   median=  0.117 ms   p90=  0.204 ms
+  --> speedup 1.56x
+
+END-TO-END ROUND TRIP (includes HTTP overhead)
+  MISS                   mean=  1.406 ms   median=  1.399 ms   p90=  1.585 ms
+  HIT                    mean=  1.077 ms   median=  1.051 ms   p90=  1.252 ms
+  --> speedup 1.31x

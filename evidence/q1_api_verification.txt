@@ -1,0 +1,9 @@
+=== NAIVE (spam-api:naive) ===
+{"status":"ok","version":"v1","cache":false}
+{"label":"spam","cached":false,"elapsed_ms":1.205,"version":"v1"}
+{"label":"ham","cached":false,"elapsed_ms":0.552,"version":"v1"}
+
+=== MULTI-STAGE (spam-api:multi) ===
+{"status":"ok","version":"v1","cache":false}
+{"label":"spam","cached":false,"elapsed_ms":0.749,"version":"v1"}
+{"label":"ham","cached":false,"elapsed_ms":0.445,"version":"v1"}

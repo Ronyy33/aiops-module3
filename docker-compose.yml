@@ -1,0 +1,46 @@
+# Q2 — two-service stack: the spam API plus a Redis cache.
+#
+# The api service reaches Redis at hostname "cache" — the service name. Compose
+# creates a default bridge network for the project and registers each service
+# name in its embedded DNS, so no IP addresses or links are needed anywhere.
+#
+# Note that cache publishes NO host port: Redis is reachable only from inside
+# the project network, which is the point of putting it behind the API.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile        # the multi-stage image from Q1
+    image: spam-api:multi
+    container_name: spam-api
+    ports:
+      - "8000:8000"
+    environment:
+      REDIS_HOST: cache             # <-- service name as hostname
+      REDIS_PORT: "6379"
+      CACHE_TTL: "300"
+      APP_VERSION: v1
+    depends_on:
+      cache:
+        condition: service_healthy  # don't start until Redis answers PING
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+  cache:
+    image: redis:7-alpine
+    container_name: spam-cache
+    # In-memory only: this is a cache, not a datastore. No RDB/AOF persistence.
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+    restart: unless-stopped

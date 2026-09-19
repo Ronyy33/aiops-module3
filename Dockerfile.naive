@@ -1,0 +1,27 @@
+# Q1 part 1 — NAIVE single-stage build.
+#
+# Deliberately written the obvious way: one stage, the full python base image,
+# everything (build tooling, training data, training script, pip's cache) kept
+# in the final image because there is nowhere else for it to go.
+
+FROM python:3.11
+
+WORKDIR /app
+
+# Full python:3.11 already ships gcc/g++/make, but install the usual build
+# metapackage anyway — this is what a naive Dockerfile typically does when a
+# pip install fails to find a wheel.
+RUN apt-get update && apt-get install -y build-essential
+
+COPY requirements.txt .
+# No --no-cache-dir, so pip's download + wheel cache stays in the image.
+RUN pip install -r requirements.txt
+
+# Copy the whole build context: app code AND the dataset generator and trainer.
+COPY . .
+
+# Train at build time so the image is self-contained.
+RUN python generate_dataset.py && python train.py
+
+EXPOSE 8000
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

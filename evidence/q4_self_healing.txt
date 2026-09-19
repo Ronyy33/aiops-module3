@@ -1,0 +1,29 @@
+=== BEFORE ===
+NAME                  DESIRED   CURRENT   READY   AGE
+spam-api-6db67c8f49   2         2         2       96s
+NAME                        READY   STATUS    RESTARTS   AGE   IP           NODE           NOMINATED NODE   READINESS GATES
+spam-api-6db67c8f49-9wq7x   1/1     Running   0          96s   10.244.0.3   minikube       <none>           <none>
+spam-api-6db67c8f49-kzkgt   1/1     Running   0          96s   10.244.1.2   minikube-m02   <none>           <none>
+
+=== 13:59:03 deleting pod spam-api-6db67c8f49-9wq7x ===
+pod "spam-api-6db67c8f49-9wq7x" deleted from default namespace
+
+=== AFTER 2s ===
+NAME                        READY   STATUS    RESTARTS   AGE   IP           NODE           NOMINATED NODE   READINESS GATES
+spam-api-6db67c8f49-kzkgt   1/1     Running   0          98s   10.244.1.2   minikube-m02   <none>           <none>
+spam-api-6db67c8f49-qlwxf   0/1     Running   0          2s    10.244.0.4   minikube       <none>           <none>
+
+=== AFTER 12s ===
+NAME                  DESIRED   CURRENT   READY   AGE
+spam-api-6db67c8f49   2         2         2       108s
+NAME                        READY   STATUS    RESTARTS   AGE    IP           NODE           NOMINATED NODE   READINESS GATES
+spam-api-6db67c8f49-kzkgt   1/1     Running   0          108s   10.244.1.2   minikube-m02   <none>           <none>
+spam-api-6db67c8f49-qlwxf   1/1     Running   0          12s    10.244.0.4   minikube       <none>           <none>
+
+=== ReplicaSet events (who created the replacement) ===
+Events:
+  Type    Reason            Age   From                   Message
+  ----    ------            ----  ----                   -------
+  Normal  SuccessfulCreate  108s  replicaset-controller  Created pod: spam-api-6db67c8f49-kzkgt
+  Normal  SuccessfulCreate  108s  replicaset-controller  Created pod: spam-api-6db67c8f49-9wq7x
+  Normal  SuccessfulCreate  12s   replicaset-controller  Created pod: spam-api-6db67c8f49-qlwxf

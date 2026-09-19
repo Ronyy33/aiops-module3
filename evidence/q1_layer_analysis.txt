@@ -1,0 +1,18 @@
+=== base image sizes ===
+
+=== compiler toolchain present? ===
+naive  : /usr/bin/gcc
+multi  : ABSENT
+
+=== pip cache left in image ===
+naive  : 90M	/root/.cache/pip
+multi  : none
+
+=== apt package lists ===
+naive  : 21M	/var/lib/apt/lists
+multi  : 244K	/var/lib/apt/lists
+none
+
+=== training data / scripts shipped in the image? ===
+naive  : Dockerfile Dockerfile.naive app generate_dataset.py model.joblib requirements.txt spam_dataset.csv train.py 
+multi  : app model.joblib 

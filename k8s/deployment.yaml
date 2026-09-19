@@ -1,0 +1,71 @@
+# Q4 — Deployment for the spam-detection API.
+#
+# 2 replicas, CPU requests/limits, and a readinessProbe against /healthz so the
+# Service only sends traffic to pods whose model has finished loading. That probe
+# is what makes the rolling update in part 3 a zero-downtime one: a new pod is
+# not added to the Service's endpoints until /healthz returns 200.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spam-api
+  labels:
+    app: spam-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: spam-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0      # never drop below 2 ready pods during a rollout
+      maxSurge: 1            # bring up one extra, wait for ready, then retire an old one
+  template:
+    metadata:
+      labels:
+        app: spam-api
+    spec:
+      containers:
+        - name: api
+          image: spam-api:multi
+          imagePullPolicy: IfNotPresent   # image is side-loaded via `minikube image load`
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: APP_VERSION
+              value: "v1"
+            # Downward API: lets a response identify which pod/node served it,
+            # which makes the self-healing demo legible.
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3

@@ -1,0 +1,6 @@
+=== single request pair: MISS then HIT ===
+x-cache: MISS
+{"label":"spam","cached":false,"elapsed_ms":2.111,"version":"v1"}
+
+x-cache: HIT
+{"label":"spam","cached":true,"elapsed_ms":0.328,"version":"v1"}

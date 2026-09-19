@@ -1,0 +1,23 @@
+# Q4 — Service fronting the spam-api Deployment.
+#
+# NodePort so it can be reached from the host during the demo. The selector is
+# what decouples the Service from individual pods: it targets the label, not pod
+# names, so pods replaced by self-healing or a rolling update are picked up
+# automatically as soon as their readinessProbe passes.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: spam-api-svc
+  labels:
+    app: spam-api
+spec:
+  type: NodePort
+  selector:
+    app: spam-api          # matches the pod template label in deployment.yaml
+  ports:
+    - name: http
+      port: 80             # port on the Service
+      targetPort: http     # named container port -> 8000
+      nodePort: 30080      # fixed so the demo URL doesn't change between applies
+      protocol: TCP
