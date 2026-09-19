@@ -1,0 +1,7 @@
+probes sent       : 362
+HTTP 200          : 360
+failures (non-200): 2
+answered by v1    : 54
+answered by v2    : 306
+last  v1 answer at: 14:02:57
+first v2 answer at: 14:02:53

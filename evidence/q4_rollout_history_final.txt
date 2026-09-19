@@ -1,0 +1,11 @@
+REPLICASET            REVISION   IMAGE            DESIRED   READY
+spam-api-6db67c8f49   1          spam-api:multi   0         <none>
+spam-api-7764b4744b   3          spam-api:v2      2         2
+spam-api-9584c9465    2          spam-api:v2      0         <none>
+
+deployment.apps/spam-api 
+REVISION  CHANGE-CAUSE
+1         v1: initial deploy of spam-api:multi
+2         v2: /healthz reports served_by pod + node (image spam-api:v2)
+3         v2 restart: outgoing pods now have preStop, re-test for dropped requests
+

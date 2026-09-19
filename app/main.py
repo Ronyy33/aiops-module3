@@ -16,7 +16,7 @@ import joblib
 from fastapi import FastAPI, Response
 from pydantic import BaseModel
 
-APP_VERSION = os.getenv("APP_VERSION", "v1")
+APP_VERSION = os.getenv("APP_VERSION", "v2")
 MODEL_PATH = os.getenv("MODEL_PATH", "model.joblib")
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
@@ -57,7 +57,8 @@ def cache_key(text: str) -> str:
 def healthz():
     if not MODEL_READY:
         return Response(status_code=503)
-    return {"status": "ok", "version": APP_VERSION, "cache": bool(cache)}
+    return {"status": "ok", "version": APP_VERSION, "cache": bool(cache),
+            "served_by": os.getenv("POD_NAME", "local"), "node": os.getenv("NODE_NAME", "local")}
 
 
 @app.post("/predict")
