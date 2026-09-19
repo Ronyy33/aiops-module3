@@ -1,0 +1,18 @@
+GET /api/v1/namespaces/default/pods?labelSelector=app%3Dshard-validator
+GET /api/v1/namespaces/default/pods/<pod>/log   x8
+
+shard  pod                      node          rows invalid expected  missing bad_email  check
+    0  shard-validator-0-npkjm  minikube-m02   250      25       25       11        14  OK
+    1  shard-validator-1-zqc2j  minikube-m02   250      23       23       13        10  OK
+    2  shard-validator-2-qsf7h  minikube       250       9        9        5         4  OK
+    3  shard-validator-3-tr6h6  minikube       250      10       10        3         7  OK
+    4  shard-validator-4-96dtz  minikube-m02   250      10       10        4         6  OK
+    5  shard-validator-5-xzq7z  minikube       250      25       25       12        13  OK
+    6  shard-validator-6-d2g7t  minikube-m02   250      15       15        7         8  OK
+    7  shard-validator-7-hrpsd  minikube       250      13       13        8         5  OK
+
+shards collected : 8/8   (failed pods retried: 0)
+total invalid    : 130   (expected 130)
+per-node pods    : minikube=4, minikube-m02=4
+max concurrent   : 4 pods (from container startedAt/finishedAt in pod status)
+RESULT: all shard counts match ground truth

@@ -1,0 +1,6 @@
+# peak snapshot at 16:17:55 UTC: 4 pods Running concurrently
+NAME                      READY   STATUS    RESTARTS   AGE   IP           NODE           NOMINATED NODE   READINESS GATES
+shard-validator-0-npkjm   1/1     Running   0          2s    10.244.1.5   minikube-m02   <none>           <none>
+shard-validator-1-zqc2j   1/1     Running   0          2s    10.244.1.6   minikube-m02   <none>           <none>
+shard-validator-2-qsf7h   1/1     Running   0          2s    10.244.0.7   minikube       <none>           <none>
+shard-validator-3-tr6h6   1/1     Running   0          2s    10.244.0.8   minikube       <none>           <none>

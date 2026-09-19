@@ -1,0 +1,59 @@
+# Q3 — Indexed Job: 8 shards, each validated by exactly one pod.
+#
+# Sizing (assumed cluster: 2 nodes x 2 allocatable CPUs = 4 CPUs):
+#   - The validator is single-threaded, so one pod can use at most 1 core.
+#     requests = limits = 1 CPU gives each pod a full, guaranteed core.
+#   - 2 CPUs per node / 1 CPU per pod = 2 pods per node -> 4 pods cluster-wide.
+#   - parallelism 4, completions 8 -> ceil(8/4) = 2 waves = the minimum makespan
+#     on 4 CPUs. parallelism 8 would leave 4 pods Pending (or, with 500m requests,
+#     halve each pod's CPU and double its runtime) for no gain; parallelism 3
+#     would need 3 waves and leave a CPU idle.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: shard-validator
+  labels:
+    app: shard-validator
+spec:
+  completionMode: Indexed      # each pod gets JOB_COMPLETION_INDEX 0..7 = its shard
+  completions: 8
+  parallelism: 4
+  backoffLimit: 4
+  template:
+    metadata:
+      labels:
+        app: shard-validator
+    spec:
+      restartPolicy: Never     # a failed pod stays (logs intact) and is retried as a new pod
+      topologySpreadConstraints:
+        - maxSkew: 1           # prefer 2 pods per node, mirroring the 2x2 assumption
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: shard-validator
+      containers:
+        - name: validator
+          image: shard-validator:v1
+          imagePullPolicy: IfNotPresent
+          env:
+            # Downward API: which pod, on which node, validated this shard.
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            # Observation window only (validation itself takes ~1 ms); see validate_shard.py.
+            - name: HOLD_SECONDS
+              value: "20"
+          resources:
+            requests:
+              cpu: "1"
+              memory: "128Mi"
+            limits:
+              cpu: "1"         # requests == limits -> Guaranteed QoS, no CPU contention
+              memory: "128Mi"
